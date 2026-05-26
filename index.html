@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppVault — اكتشف أفضل تطبيقات الهاتف يومياً</title>
+    <meta name="description" content="اكتشف أحدث وأفضل تطبيقات الهاتف المحمول يومياً. تطبيقات أندرويد وآيفون جديدة، مراجعات، وتقييمات.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --primary-dark: #5A4BD1;
+            --accent: #00CEC9;
+            --accent-light: #55EFC4;
+            --bg: #0F0F1A;
+            --bg-card: #1A1A2E;
+            --bg-card-hover: #222240;
+            --text: #E8E8F0;
+            --text-muted: #8888A0;
+            --border: #2A2A45;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #FF7675;
+            --gradient-1: linear-gradient(135deg, #6C5CE7, #00CEC9);
+            --gradient-2: linear-gradient(135deg, #A29BFE, #55EFC4);
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === Animated Background === */
+        .bg-glow {
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(108,92,231,0.15), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 8s ease-in-out infinite;
+        }
+        .bg-glow-2 {
+            position: fixed;
+            bottom: -200px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0,206,201,0.1), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* === Header === */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15,15,26,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 2rem;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--bg-card);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+        }
+        .stat-badge .num {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* === Hero === */
+        .hero {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+        .hero h1 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* === Search === */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            padding-right: 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108,92,231,0.2);
+        }
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* === Filters === */
+        .filters {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .filter-btn {
+            padding: 0.5rem 1.1rem;
+            border-radius: 25px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover {
+            border-color: var(--primary-light);
+            color: var(--text);
+        }
+        .filter-btn.active {
+            background: var(--gradient-1);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* === Grid === */
+        .apps-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === App Card === */
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.3rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .app-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 40px rgba(108,92,231,0.15);
+        }
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        .app-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .app-icon.ai { background: linear-gradient(135deg, #6C5CE7, #A29BFE); }
+        .app-icon.productivity { background: linear-gradient(135deg, #00B894, #55EFC4); }
+        .app-icon.music { background: linear-gradient(135deg, #E17055, #FDCB6E); }
+        .app-icon.weather { background: linear-gradient(135deg, #0984E3, #74B9FF); }
+        .app-icon.tools { background: linear-gradient(135deg, #636E72, #B2BEC3); }
+        .app-icon.social { background: linear-gradient(135deg, #E84393, #FD79A8); }
+
+        .card-info { flex: 1; min-width: 0; }
+        .app-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .app-name-ar {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.6rem;
+        }
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+        }
+        .meta-badge.rating { color: var(--warning); }
+        .meta-badge.free { color: var(--success); }
+        .meta-badge.freemium { color: var(--primary-light); }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            background: rgba(108,92,231,0.15);
+            color: var(--primary-light);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+        .date-added {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 1rem;
+            background: var(--gradient-1);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(108,92,231,0.4);
+        }
+
+        /* === Empty State === */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            grid-column: 1 / -1;
+            color: var(--text-muted);
+        }
+        .empty-state .emoji { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* === Footer === */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--primary-light); text-decoration: none; }
+
+        /* === New Badge === */
+        .new-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--accent);
+            color: var(--bg);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .apps-grid { grid-template-columns: 1fr; }
+            .header-stats { display: none; }
+            header { padding: 0.6rem 1rem; }
+            .hero { padding: 2rem 1rem 1.5rem; }
+            .apps-grid { padding: 0 1rem 2rem; }
+            .filters { padding: 0 1rem 1rem; }
+        }
+
+        /* === Scroll animation === */
+        .app-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === Count animation === */
+        .count-up { transition: all 0.3s; }
+
+        /* === Platform icons === */
+        .platform-icon { font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">📱</div>
+                <div>
+                    <div class="logo-text">AppVault</div>
+                    <div class="logo-sub">اكتشف تطبيقات جديدة كل يوم</div>
+                </div>
+            </a>
+            <div class="header-stats">
+                <div class="stat-badge">
+                    <span>📱</span>
+                    <span class="num" id="total-count">0</span>
+                    <span>تطبيق</span>
+                </div>
+                <div class="stat-badge">
+                    <span>🔄</span>
+                    <span id="last-update">اليوم</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>اكتشف <span>أفضل التطبيقات</span> الجديدة يومياً</h1>
+        <p>نكتشف لك أحدث وأفضل تطبيقات الهاتف كل يوم. تطبيقات مختارة بعناية مع مراجعات وتقييمات.</p>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="search" placeholder="ابحث عن تطبيق..." autocomplete="off">
+        </div>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all">🔥 الكل</button>
+        <button class="filter-btn" data-filter="ai">🤖 ذكاء اصطناعي</button>
+        <button class="filter-btn" data-filter="productivity">⚡ إنتاجية</button>
+        <button class="filter-btn" data-filter="tools">🛠️ أدوات</button>
+        <button class="filter-btn" data-filter="music">🎵 موسيقى</button>
+        <button class="filter-btn" data-filter="weather">🌤️ طقس</button>
+        <button class="filter-btn" data-filter="social">💬 تواصل</button>
+    </div>
+
+    <div class="apps-grid" id="apps-grid"></div>
+
+    <footer>
+        <p>AppVault — يُحدَّث تلقائياً بواسطة <a href="#">Tony AI Agent</a> 🤖</p>
+        <p style="margin-top:0.5rem;">© 2026 Ayoub • مدعوم بالذكاء الاصطناعي</p>
+    </footer>
+
+    <script>
+    const CATEGORY_ICONS = {
+        ai: '🤖', productivity: '⚡', music: '🎵',
+        weather: '🌤️', tools: '🛠️', social: '💬'
+    };
+    const PLATFORM_LABELS = {
+        android: '🤖 Android',
+        ios: '🍎 iOS',
+        both: '📱 Android & iOS'
+    };
+
+    let apps = [];
+    let currentFilter = 'all';
+
+    async function loadApps() {
+        try {
+            const res = await fetch('apps.json?v=' + Date.now());
+            apps = await res.json();
+            apps.sort((a, b) => new Date(b.added_date) - new Date(a.added_date));
+            document.getElementById('total-count').textContent = apps.length;
+            renderApps();
+        } catch(e) {
+            console.error('Error loading apps:', e);
+        }
+    }
+
+    function isNew(dateStr) {
+        const d = new Date(dateStr);
+        const now = new Date();
+        return (now - d) < 3 * 24 * 60 * 60 * 1000;
+    }
+
+    function renderApps() {
+        const grid = document.getElementById('apps-grid');
+        const search = document.getElementById('search').value.toLowerCase();
+
+        let filtered = apps.filter(app => {
+            const matchFilter = currentFilter === 'all' || app.category === currentFilter;
+            const matchSearch = !search ||
+                app.name.toLowerCase().includes(search) ||
+                app.name_ar.includes(search) ||
+                app.description.toLowerCase().includes(search) ||
+                app.description_ar.includes(search) ||
+                app.tags.some(t => t.includes(search));
+            return matchFilter && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="emoji">🔍</div>
+                    <h3>لا توجد نتائج</h3>
+                    <p>جرب البحث بكلمة أخرى أو اختر فئة مختلفة</p>
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map((app, i) => `
+            <div class="app-card" style="animation-delay: ${i * 0.05}s" onclick="window.open('${app.url}', '_blank')">
+                ${isNew(app.added_date) ? '<div class="new-badge">جديد 🔥</div>' : ''}
+                <div class="card-header">
+                    <div class="app-icon ${app.category}">
+                        ${CATEGORY_ICONS[app.category] || '📱'}
+                    </div>
+                    <div class="card-info">
+                        <div class="app-name">${app.name}</div>
+                        <div class="app-name-ar">${app.name_ar}</div>
+                    </div>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-badge rating">⭐ ${app.rating}</span>
+                    <span class="meta-badge ${app.price === 'free' ? 'free' : 'freemium'}">${app.price === 'free' ? '✅ مجاني' : '💎 مجاني+'}</span>
+                    <span class="meta-badge">${PLATFORM_LABELS[app.platform] || app.platform}</span>
+                </div>
+                <div class="card-desc">${app.description_ar}</div>
+                <div class="card-tags">
+                    ${app.tags.map(t => `<span class="tag">#${t}</span>`).join('')}
+                </div>
+                <div class="card-footer">
+                    <span class="date-added">📅 ${app.added_date}</span>
+                    <a href="${app.url}" target="_blank" class="download-btn" onclick="event.stopPropagation()">
+                        تحميل ↗
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Filters
+    document.getElementById('filters').addEventListener('click', e => {
+        if (!e.target.classList.contains('filter-btn')) return;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderApps();
+    });
+
+    // Search
+    document.getElementById('search').addEventListener('input', () => {
+        renderApps();
+    });
+
+    // Init
+    loadApps();
+    </script>
+</body>
+</html>

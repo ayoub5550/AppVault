@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppVault — اكتشف أفضل تطبيقات الهاتف يومياً</title>
     <meta name="description" content="اكتشف أحدث وأفضل تطبيقات الهاتف المحمول يومياً. تطبيقات أندرويد وآيفون جديدة، مراجعات، وتقييمات.">
+    <meta name="theme-color" content="#0F0F1A">
+    <meta property="og:title" content="AppVault — تطبيقات تستحق مكاناً على هاتفك">
+    <meta property="og:description" content="دليل عربي مختصر لأفضل تطبيقات Android وiOS، مع بحث وفلاتر سريعة.">
+    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
@@ -30,6 +34,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
         body {
             font-family: 'Tajawal', sans-serif;
@@ -38,6 +43,12 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
+        .skip-link {
+            position: fixed; top: 0.75rem; right: 0.75rem; z-index: 999;
+            transform: translateY(-150%); background: var(--text); color: var(--bg);
+            padding: 0.65rem 1rem; border-radius: 8px; text-decoration: none;
+        }
+        .skip-link:focus { transform: translateY(0); }
 
         /* === Animated Background === */
         .bg-glow {
@@ -195,6 +206,12 @@
             color: var(--text-muted);
             font-size: 1.1rem;
         }
+        .clear-search {
+            position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%);
+            border: 0; background: transparent; color: var(--text-muted); cursor: pointer;
+            width: 34px; height: 34px; border-radius: 8px; font-size: 1.1rem;
+        }
+        .clear-search:hover { color: var(--text); background: rgba(255,255,255,0.06); }
 
         /* === Filters === */
         .filters {
@@ -229,6 +246,17 @@
             color: white;
             border-color: transparent;
         }
+        .discovery-tools {
+            max-width: 1200px; margin: -0.5rem auto 1.25rem; padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; color: var(--text-muted); position: relative; z-index: 1;
+        }
+        .select-group { display: flex; gap: 0.55rem; }
+        .compact-select {
+            background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+            border-radius: 10px; padding: 0.55rem 0.75rem; font: inherit; cursor: pointer;
+        }
+        .results-count strong { color: var(--accent); }
 
         /* === Grid === */
         .apps-grid {
@@ -253,6 +281,7 @@
             position: relative;
             overflow: hidden;
         }
+        .app-card:focus-within { border-color: var(--primary-light); }
         .app-card::before {
             content: '';
             position: absolute;
@@ -380,6 +409,7 @@
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(108,92,231,0.4);
         }
+        .download-btn:focus-visible { outline-color: white; }
 
         /* === Empty State === */
         .empty-state {
@@ -425,6 +455,15 @@
             .hero { padding: 2rem 1rem 1.5rem; }
             .apps-grid { padding: 0 1rem 2rem; }
             .filters { padding: 0 1rem 1rem; }
+            .discovery-tools { padding: 0 1rem; align-items: stretch; flex-direction: column; }
+            .select-group { display: grid; grid-template-columns: 1fr 1fr; }
+            .compact-select { min-width: 0; width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important; transition-duration: 0.01ms !important;
+            }
         }
 
         /* === Scroll animation === */
@@ -445,12 +484,13 @@
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#apps-grid">تخطي إلى التطبيقات</a>
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
 
     <header>
         <div class="header-inner">
-            <a href="/" class="logo">
+            <a href="./" class="logo" aria-label="AppVault — الصفحة الرئيسية">
                 <div class="logo-icon">📱</div>
                 <div>
                     <div class="logo-text">AppVault</div>
@@ -476,12 +516,13 @@
         <p>نكتشف لك أحدث وأفضل تطبيقات الهاتف كل يوم. تطبيقات مختارة بعناية مع مراجعات وتقييمات.</p>
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="search" placeholder="ابحث عن تطبيق..." autocomplete="off">
+            <input type="search" class="search-input" id="search" placeholder="ابحث بالاسم أو الوصف أو الوسم..." autocomplete="off" aria-label="ابحث عن تطبيق">
+            <button class="clear-search" id="clear-search" type="button" aria-label="مسح البحث" hidden>×</button>
         </div>
     </section>
 
     <div class="filters" id="filters">
-        <button class="filter-btn active" data-filter="all">🔥 الكل</button>
+        <button class="filter-btn active" data-filter="all" aria-pressed="true">🔥 الكل</button>
         <button class="filter-btn" data-filter="ai">🤖 ذكاء اصطناعي</button>
         <button class="filter-btn" data-filter="productivity">⚡ إنتاجية</button>
         <button class="filter-btn" data-filter="tools">🛠️ أدوات</button>
@@ -490,7 +531,26 @@
         <button class="filter-btn" data-filter="social">💬 تواصل</button>
     </div>
 
-    <div class="apps-grid" id="apps-grid"></div>
+    <div class="discovery-tools">
+        <p class="results-count" id="results-count" role="status" aria-live="polite">جارٍ تحميل التطبيقات…</p>
+        <div class="select-group">
+            <select class="compact-select" id="platform-filter" aria-label="فلترة حسب المنصة">
+                <option value="all">كل المنصات</option>
+                <option value="android">Android</option>
+                <option value="ios">iOS</option>
+                <option value="both">Android وiOS</option>
+            </select>
+            <select class="compact-select" id="sort-by" aria-label="ترتيب التطبيقات">
+                <option value="newest">الأحدث أولاً</option>
+                <option value="rating">الأعلى تقييماً</option>
+                <option value="name">الاسم أبجدياً</option>
+            </select>
+        </div>
+    </div>
+
+    <main class="apps-grid" id="apps-grid" aria-busy="true">
+        <div class="empty-state"><div class="emoji">⏳</div><p>جارٍ فتح الخزنة…</p></div>
+    </main>
 
     <footer>
         <p>AppVault — يُحدَّث تلقائياً بواسطة <a href="#">Tony AI Agent</a> 🤖</p>
@@ -510,16 +570,49 @@
 
     let apps = [];
     let currentFilter = 'all';
+    let currentPlatform = 'all';
+    let currentSort = 'newest';
+
+    const $ = id => document.getElementById(id);
+    const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[char]));
+    const safeUrl = value => {
+        try {
+            const url = new URL(value, window.location.href);
+            return ['http:', 'https:'].includes(url.protocol) ? url.href : '#';
+        } catch { return '#'; }
+    };
+    const formatDate = value => {
+        const date = new Date(`${value}T00:00:00`);
+        return Number.isNaN(date.getTime())
+            ? escapeHTML(value)
+            : new Intl.DateTimeFormat('ar-DZ', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    };
 
     async function loadApps() {
         try {
-            const res = await fetch('apps.json?v=' + Date.now());
-            apps = await res.json();
-            apps.sort((a, b) => new Date(b.added_date) - new Date(a.added_date));
-            document.getElementById('total-count').textContent = apps.length;
+            const res = await fetch('apps.json');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error('Invalid apps data');
+            apps = data;
+            $('total-count').textContent = apps.length;
+            const latestDate = apps.reduce((latest, app) =>
+                app.added_date > latest ? app.added_date : latest, '');
+            $('last-update').textContent = latestDate ? formatDate(latestDate) : '—';
             renderApps();
         } catch(e) {
             console.error('Error loading apps:', e);
+            $('apps-grid').innerHTML = `
+                <div class="empty-state">
+                    <div class="emoji">⚠️</div>
+                    <h3>تعذر تحميل التطبيقات</h3>
+                    <p>تحقق من اتصالك ثم أعد تحميل الصفحة.</p>
+                </div>`;
+            $('results-count').textContent = 'تعذر تحميل البيانات';
+        } finally {
+            $('apps-grid').setAttribute('aria-busy', 'false');
         }
     }
 
@@ -530,19 +623,24 @@
     }
 
     function renderApps() {
-        const grid = document.getElementById('apps-grid');
-        const search = document.getElementById('search').value.toLowerCase();
+        const grid = $('apps-grid');
+        const search = $('search').value.trim().toLocaleLowerCase('ar');
 
         let filtered = apps.filter(app => {
             const matchFilter = currentFilter === 'all' || app.category === currentFilter;
+            const matchPlatform = currentPlatform === 'all' || app.platform === currentPlatform;
             const matchSearch = !search ||
-                app.name.toLowerCase().includes(search) ||
-                app.name_ar.includes(search) ||
-                app.description.toLowerCase().includes(search) ||
-                app.description_ar.includes(search) ||
-                app.tags.some(t => t.includes(search));
-            return matchFilter && matchSearch;
+                [app.name, app.name_ar, app.description, app.description_ar, ...(app.tags || [])]
+                    .some(value => String(value || '').toLocaleLowerCase('ar').includes(search));
+            return matchFilter && matchPlatform && matchSearch;
         });
+
+        filtered.sort((a, b) => {
+            if (currentSort === 'rating') return Number(b.rating) - Number(a.rating);
+            if (currentSort === 'name') return a.name.localeCompare(b.name, 'ar');
+            return String(b.added_date).localeCompare(String(a.added_date)) || b.id - a.id;
+        });
+        $('results-count').innerHTML = `نعرض <strong>${filtered.length}</strong> من ${apps.length} تطبيق`;
 
         if (filtered.length === 0) {
             grid.innerHTML = `
@@ -555,47 +653,67 @@
         }
 
         grid.innerHTML = filtered.map((app, i) => `
-            <div class="app-card" style="animation-delay: ${i * 0.05}s" onclick="window.open('${app.url}', '_blank')">
+            <article class="app-card" style="animation-delay: ${Math.min(i, 12) * 0.04}s">
                 ${isNew(app.added_date) ? '<div class="new-badge">جديد 🔥</div>' : ''}
                 <div class="card-header">
-                    <div class="app-icon ${app.category}">
+                    <div class="app-icon ${escapeHTML(app.category)}" aria-hidden="true">
                         ${CATEGORY_ICONS[app.category] || '📱'}
                     </div>
                     <div class="card-info">
-                        <div class="app-name">${app.name}</div>
-                        <div class="app-name-ar">${app.name_ar}</div>
+                        <h2 class="app-name">${escapeHTML(app.name)}</h2>
+                        <div class="app-name-ar">${escapeHTML(app.name_ar)}</div>
                     </div>
                 </div>
                 <div class="card-meta">
-                    <span class="meta-badge rating">⭐ ${app.rating}</span>
+                    <span class="meta-badge rating" aria-label="التقييم ${escapeHTML(app.rating)} من 5">⭐ ${escapeHTML(app.rating)}</span>
                     <span class="meta-badge ${app.price === 'free' ? 'free' : 'freemium'}">${app.price === 'free' ? '✅ مجاني' : '💎 مجاني+'}</span>
-                    <span class="meta-badge">${PLATFORM_LABELS[app.platform] || app.platform}</span>
+                    <span class="meta-badge">${PLATFORM_LABELS[app.platform] || escapeHTML(app.platform)}</span>
                 </div>
-                <div class="card-desc">${app.description_ar}</div>
+                <p class="card-desc">${escapeHTML(app.description_ar)}</p>
                 <div class="card-tags">
-                    ${app.tags.map(t => `<span class="tag">#${t}</span>`).join('')}
+                    ${(app.tags || []).map(t => `<span class="tag">#${escapeHTML(t)}</span>`).join('')}
                 </div>
                 <div class="card-footer">
-                    <span class="date-added">📅 ${app.added_date}</span>
-                    <a href="${app.url}" target="_blank" class="download-btn" onclick="event.stopPropagation()">
-                        تحميل ↗
+                    <time class="date-added" datetime="${escapeHTML(app.added_date)}">📅 ${formatDate(app.added_date)}</time>
+                    <a href="${safeUrl(app.url)}" target="_blank" rel="noopener noreferrer" class="download-btn"
+                       aria-label="فتح صفحة ${escapeHTML(app.name)} في نافذة جديدة">
+                        فتح التطبيق ↗
                     </a>
                 </div>
-            </div>
+            </article>
         `).join('');
     }
 
     // Filters
     document.getElementById('filters').addEventListener('click', e => {
         if (!e.target.classList.contains('filter-btn')) return;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+        });
         e.target.classList.add('active');
+        e.target.setAttribute('aria-pressed', 'true');
         currentFilter = e.target.dataset.filter;
         renderApps();
     });
 
     // Search
-    document.getElementById('search').addEventListener('input', () => {
+    $('search').addEventListener('input', () => {
+        $('clear-search').hidden = !$('search').value;
+        renderApps();
+    });
+    $('clear-search').addEventListener('click', () => {
+        $('search').value = '';
+        $('clear-search').hidden = true;
+        $('search').focus();
+        renderApps();
+    });
+    $('platform-filter').addEventListener('change', e => {
+        currentPlatform = e.target.value;
+        renderApps();
+    });
+    $('sort-by').addEventListener('change', e => {
+        currentSort = e.target.value;
         renderApps();
     });
 

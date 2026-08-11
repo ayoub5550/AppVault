@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>إدارة AppVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f0f1a;--panel:#18182b;--panel2:#20203a;--text:#f1f1f7;--muted:#9696ad;--line:#30304e;--primary:#7467f0;--accent:#13c8c3;--danger:#ff6b78;--ok:#3bd4a0}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Tajawal,sans-serif}
+    button,input,textarea,select{font:inherit} button{cursor:pointer}.hidden{display:none!important}
+    .login{min-height:100vh;display:grid;place-items:center;padding:1rem;background:radial-gradient(circle at 75% 0,rgba(116,103,240,.18),transparent 40%)}
+    .login-card,.modal-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:2rem;box-shadow:0 24px 80px #0008}
+    .login-card{width:min(420px,100%)} h1,h2,p{margin-top:0}.brand{color:var(--accent)}
+    label{display:block;color:var(--muted);font-size:.85rem;margin:.9rem 0 .3rem}
+    input,textarea,select{width:100%;background:#111121;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:.75rem}
+    textarea{min-height:90px;resize:vertical}.btn{border:0;border-radius:10px;padding:.7rem 1rem;background:var(--primary);color:#fff;font-weight:700}
+    .btn.secondary{background:var(--panel2);border:1px solid var(--line)}.btn.danger{background:#4a202a;color:#ffb3bb}.btn.small{padding:.45rem .7rem;font-size:.82rem}
+    .login .btn{width:100%;margin-top:1rem}.error{color:#ff9aa4;min-height:1.4em;margin:.6rem 0 0}
+    header{position:sticky;top:0;z-index:4;background:#0f0f1aeF;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+    .bar{max-width:1200px;margin:auto;padding:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .actions{display:flex;gap:.6rem;flex-wrap:wrap}.wrap{max-width:1200px;margin:auto;padding:1.4rem}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.2rem}.stat{background:var(--panel);border:1px solid var(--line);padding:1rem;border-radius:14px}.stat strong{font-size:1.5rem;color:var(--accent);display:block}
+    .toolbar{display:flex;gap:.7rem;margin-bottom:1rem}.toolbar input{max-width:420px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:850px;background:var(--panel)}
+    th,td{text-align:right;padding:.85rem;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-size:.8rem;background:#151526}
+    .badge{display:inline-flex;padding:.2rem .5rem;border-radius:99px;background:var(--panel2);font-size:.75rem}.live{color:var(--ok)}.draft{color:#f5c16c}
+    .row-actions{display:flex;gap:.4rem}.modal{position:fixed;inset:0;z-index:10;background:#000a;display:grid;place-items:center;padding:1rem}.modal-card{width:min(850px,100%);max-height:94vh;overflow:auto}
+    .modal-head{display:flex;justify-content:space-between;align-items:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}.full{grid-column:1/-1}
+    .checks{display:flex;gap:1rem;margin:1rem 0}.checks label{display:flex;gap:.4rem;align-items:center;color:var(--text);margin:0}.checks input{width:auto}
+    .form-actions{display:flex;justify-content:flex-end;gap:.6rem}.toast{position:fixed;bottom:1rem;left:1rem;background:var(--panel2);border:1px solid var(--line);padding:.8rem 1rem;border-radius:10px;z-index:20}
+    @media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}.bar{align-items:flex-start}.toolbar{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <section class="login" id="login">
+    <form class="login-card" id="login-form">
+      <h1><span class="brand">AppVault</span> Control</h1>
+      <p>إدارة التطبيقات والنشر والإحصاءات.</p>
+      <label for="username">اسم المستخدم</label><input id="username" autocomplete="username" required>
+      <label for="password">كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required>
+      <button class="btn">تسجيل الدخول</button><p class="error" id="login-error"></p>
+    </form>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <header><div class="bar"><div><strong class="brand">AppVault</strong> <span>Control</span></div><div class="actions">
+      <a class="btn secondary" href="/" target="_blank">فتح الموقع ↗</a><button class="btn" id="add">+ تطبيق جديد</button><button class="btn danger" id="logout">خروج</button>
+    </div></div></header>
+    <main class="wrap">
+      <div class="stats">
+        <div class="stat"><strong id="s-total">—</strong><span>تطبيق</span></div>
+        <div class="stat"><strong id="s-live">—</strong><span>منشور</span></div>
+        <div class="stat"><strong id="s-clicks">—</strong><span>نقرة</span></div>
+        <div class="stat"><strong id="s-views">—</strong><span>مشاهدة</span></div>
+      </div>
+      <div class="toolbar"><input id="search" placeholder="ابحث في التطبيقات…"><select id="status"><option value="all">كل الحالات</option><option value="live">منشور</option><option value="draft">مسودة</option></select></div>
+      <div class="table-wrap"><table><thead><tr><th>التطبيق</th><th>الفئة</th><th>المنصة</th><th>التقييم</th><th>الحالة</th><th>الأداء</th><th>إجراءات</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </main>
+  </section>
+
+  <div class="modal hidden" id="modal"><form class="modal-card" id="app-form">
+    <div class="modal-head"><h2 id="modal-title">تطبيق جديد</h2><button type="button" class="btn secondary small" id="close">✕</button></div>
+    <input type="hidden" id="app-id">
+    <div class="grid">
+      <div><label>الاسم الإنجليزي</label><input id="name" required></div><div><label>الاسم العربي</label><input id="name_ar" required></div>
+      <div><label>Slug</label><input id="slug" placeholder="app-name"></div><div><label>الفئة العربية</label><input id="category_ar" required></div>
+      <div><label>التصنيف</label><select id="category"><option value="ai">ذكاء اصطناعي</option><option value="productivity">إنتاجية</option><option value="tools">أدوات</option><option value="music">موسيقى</option><option value="weather">طقس</option><option value="social">تواصل</option></select></div>
+      <div><label>المنصة</label><select id="platform"><option value="android">Android</option><option value="ios">iOS</option><option value="both">Android وiOS</option></select></div>
+      <div class="full"><label>الوصف العربي</label><textarea id="description_ar" required></textarea></div><div class="full"><label>الوصف الإنجليزي</label><textarea id="description" required></textarea></div>
+      <div><label>رابط التطبيق</label><input id="url" type="url" required></div><div><label>رابط الصورة</label><input id="image" type="url"></div>
+      <div><label>التقييم</label><input id="rating" type="number" min="0" max="5" step=".1" value="4.5" required></div><div><label>السعر</label><select id="price"><option value="free">مجاني</option><option value="freemium">مجاني+</option><option value="paid">مدفوع</option></select></div>
+      <div><label>تاريخ الإضافة</label><input id="added_date" type="date" required></div><div><label>الوسوم (مفصولة بفاصلة)</label><input id="tags"></div>
+    </div>
+    <div class="checks"><label><input id="published" type="checkbox" checked> منشور</label><label><input id="featured" type="checkbox"> مميز</label></div>
+    <p class="error" id="form-error"></p><div class="form-actions"><button type="button" class="btn secondary" id="cancel">إلغاء</button><button class="btn">حفظ التطبيق</button></div>
+  </form></div>
+  <div class="toast hidden" id="toast"></div>
+<script>
+let apps=[],csrf='';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+async function request(url,options={}){options.headers={'Content-Type':'application/json',...(csrf?{'X-CSRF-Token':csrf}:{}),...(options.headers||{})};const r=await fetch(url,options);const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.error||`HTTP ${r.status}`);return data}
+function toast(message){$('toast').textContent=message;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}
+async function session(){const s=await request('/api/admin/session');if(s.authenticated){csrf=s.csrf;$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');await load()}else{$('login').classList.remove('hidden')}}
+async function load(){const data=await request('/api/admin/apps');apps=data.apps;render()}
+function render(){const q=$('search').value.toLowerCase(),status=$('status').value;const shown=apps.filter(a=>(status==='all'||(status==='live')===a.published)&&(!q||[a.name,a.name_ar,a.category_ar].some(x=>x.toLowerCase().includes(q))));
+ $('s-total').textContent=apps.length;$('s-live').textContent=apps.filter(a=>a.published).length;$('s-clicks').textContent=apps.reduce((n,a)=>n+a.clicks,0);$('s-views').textContent=apps.reduce((n,a)=>n+a.views,0);
+ $('rows').innerHTML=shown.map(a=>`<tr><td><strong>${esc(a.name)}</strong><br><small>${esc(a.name_ar)}</small></td><td>${esc(a.category_ar)}</td><td>${esc(a.platform)}</td><td>⭐ ${a.rating}</td><td><span class="badge ${a.published?'live':'draft'}">${a.published?'منشور':'مسودة'}</span></td><td>${a.clicks} نقرة · ${a.views} مشاهدة</td><td><div class="row-actions"><button class="btn secondary small" data-edit="${a.id}">تعديل</button><button class="btn danger small" data-delete="${a.id}">حذف</button></div></td></tr>`).join('')||'<tr><td colspan="7">لا توجد نتائج.</td></tr>'}
+function openForm(app={}){$('modal-title').textContent=app.id?'تعديل التطبيق':'تطبيق جديد';for(const key of ['id','name','name_ar','slug','category_ar','description','description_ar','url','image','rating','added_date','tags']){const el=$(key==='id'?'app-id':key);el.value=key==='tags'?(app.tags||[]).join(', '):(app[key]??'')}for(const key of ['category','platform','price'])$(key).value=app[key]||({category:'ai',platform:'android',price:'free'}[key]);$('published').checked=app.published??true;$('featured').checked=app.featured??false;$('added_date').value=app.added_date||new Date().toISOString().slice(0,10);$('rating').value=app.rating??4.5;$('form-error').textContent='';$('modal').classList.remove('hidden')}
+function closeForm(){$('modal').classList.add('hidden')}
+$('login-form').addEventListener('submit',async e=>{e.preventDefault();$('login-error').textContent='';try{const d=await request('/api/admin/login',{method:'POST',body:JSON.stringify({username:$('username').value,password:$('password').value})});csrf=d.csrf;await session()}catch(err){$('login-error').textContent=err.message}})
+$('app-form').addEventListener('submit',async e=>{e.preventDefault();const id=$('app-id').value;const data={};for(const key of ['name','name_ar','slug','category_ar','description','description_ar','url','image','rating','added_date','tags','category','platform','price'])data[key]=$(key).value;data.published=$('published').checked;data.featured=$('featured').checked;try{await request(id?`/api/admin/apps/${id}`:'/api/admin/apps',{method:id?'PUT':'POST',body:JSON.stringify(data)});closeForm();await load();toast('تم الحفظ بنجاح')}catch(err){$('form-error').textContent=err.message}})
+$('rows').addEventListener('click',async e=>{const edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit)openForm(apps.find(a=>a.id==edit));if(del&&confirm('حذف هذا التطبيق نهائيًا؟')){try{await request(`/api/admin/apps/${del}`,{method:'DELETE'});await load();toast('تم الحذف')}catch(err){toast(err.message)}}})
+$('logout').addEventListener('click',async()=>{await request('/api/admin/logout',{method:'POST'});location.reload()});$('add').onclick=()=>openForm();$('close').onclick=closeForm;$('cancel').onclick=closeForm;$('search').oninput=render;$('status').onchange=render;session();
+</script>
+</body></html>

@@ -553,11 +553,12 @@
     </main>
 
     <footer>
-        <p>AppVault — يُحدَّث تلقائياً بواسطة <a href="#">Tony AI Agent</a> 🤖</p>
-        <p style="margin-top:0.5rem;">© 2026 Ayoub • مدعوم بالذكاء الاصطناعي</p>
+        <p>AppVault — دليلك العربي لاكتشاف تطبيقات تستحق التجربة</p>
+        <p style="margin-top:0.5rem;">© 2026 AppVault • <a href="/admin">إدارة المحتوى</a></p>
     </footer>
 
     <script>
+    const API_BASE = '/api';
     const CATEGORY_ICONS = {
         ai: '🤖', productivity: '⚡', music: '🎵',
         weather: '🌤️', tools: '🛠️', social: '💬'
@@ -592,11 +593,11 @@
 
     async function loadApps() {
         try {
-            const res = await fetch('apps.json');
+            const res = await fetch(`${API_BASE}/apps`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
-            if (!Array.isArray(data)) throw new Error('Invalid apps data');
-            apps = data;
+            if (!Array.isArray(data.apps)) throw new Error('Invalid apps data');
+            apps = data.apps;
             $('total-count').textContent = apps.length;
             const latestDate = apps.reduce((latest, app) =>
                 app.added_date > latest ? app.added_date : latest, '');
@@ -675,7 +676,7 @@
                 </div>
                 <div class="card-footer">
                     <time class="date-added" datetime="${escapeHTML(app.added_date)}">📅 ${formatDate(app.added_date)}</time>
-                    <a href="${safeUrl(app.url)}" target="_blank" rel="noopener noreferrer" class="download-btn"
+                    <a href="${safeUrl(app.url)}" target="_blank" rel="noopener noreferrer" class="download-btn" data-app-id="${app.id}"
                        aria-label="فتح صفحة ${escapeHTML(app.name)} في نافذة جديدة">
                         فتح التطبيق ↗
                     </a>
@@ -711,6 +712,10 @@
     $('platform-filter').addEventListener('change', e => {
         currentPlatform = e.target.value;
         renderApps();
+    });
+    document.addEventListener('click', e => {
+        const link = e.target.closest('[data-app-id]');
+        if (link) fetch(`${API_BASE}/apps/${link.dataset.appId}/click`, { method: 'POST', keepalive: true });
     });
     $('sort-by').addEventListener('change', e => {
         currentSort = e.target.value;

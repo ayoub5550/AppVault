@@ -1,0 +1,21 @@
+[Unit]
+Description=AppVault Full-Stack Application
+After=network.target
+
+[Service]
+Type=simple
+User=appvault
+Group=appvault
+WorkingDirectory=/opt/appvault
+EnvironmentFile=/etc/appvault.env
+ExecStart=/usr/bin/python3 /opt/appvault/server.py
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/appvault/data
+
+[Install]
+WantedBy=multi-user.target
